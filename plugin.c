@@ -13,6 +13,7 @@ int main(){
     sr_session_ctx_t *session;
     sr_subscription_ctx_t *subscription;
 
+    //Set everything up
     int err = sr_connect(SR_CONN_DEFAULT, &conn);
     if (err != SR_ERR_OK){
         printf("connection error %d\n", err);
@@ -33,6 +34,8 @@ int main(){
 
     sr_set_ext_data_cb(conn, mountpoint_ext_data_clb, (void*) ctx);
 
+    //Create a parent node, in the sysrepo callback for sr_oper_get_subscribe this
+    //is already passed in the signature
     struct lyd_node** parent;
     LY_ERR lyErr = lyd_new_path(NULL, ctx, "/bbf-device-aggregation:devices", NULL, 0, parent);
     if (err != LY_SUCCESS) {
@@ -44,12 +47,14 @@ int main(){
         printf("null created node\n");
     }
 
+    //Try to assign a value for the first path
     lyErr = lyd_new_path(*parent, ctx, "/bbf-device-aggregation:devices/device[name='a07dcc30-1107-4754-b513-09b1d389508c']/data/ietf-hardware:hardware/component[name='a07dcc30-1107-4754-b513-09b1d389508c']/mfg-name", "test1", 0, NULL);
     if (err != LY_SUCCESS) {
         printf("first creation error %d\n", lyErr);
         return 1;
     }
 
+    //Try to assign a value for the second path
     lyErr = lyd_new_path(*parent, ctx, "/bbf-device-aggregation:devices/device[name='a07dcc30-1107-4754-b513-09b1d389508c']/data/ietf-hardware:hardware/component[name='a07dcc30-1107-4754-b513-09b1d389508c']/model-name", "test2", 0, NULL);
     if (err != LY_SUCCESS) {
         printf("second creation error %d\n", lyErr);
